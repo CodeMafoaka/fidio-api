@@ -166,7 +166,7 @@ paths:
         - Election
       description: Get Election Result
       parameters:
-        - in: query
+        - in: path
           name: electionId
           required: true
           schema:
