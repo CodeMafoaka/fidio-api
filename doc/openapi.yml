@@ -95,7 +95,7 @@ paths:
             schema:
               type: array
               items:
-                  $ref: "#/components/schemas/CreateElection"
+                $ref: "#/components/schemas/CreateElection"
       responses:
         '201':
           description: Election(s) created
@@ -106,9 +106,72 @@ paths:
                 items:
                   $ref: "#/components/schemas/Election"
 
+  /elections/{electionId}/result:
+    get:
+      operationId: getElectionResult
+      tags:
+        - Election
+      description: Get Election Result
+      parameters:
+        - in: query
+          name: electionId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ElectionResult"
+
+  /votes:
+    post:
+      operationId: createVotes
+      tags:
+        - Vote
+      description: Create Vote(s)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/CreateVote"
+      responses:
+        '201':
+          description: Vote(s) created
 
 components:
   schemas:
+    ElectionResult:
+      type: object
+      properties:
+        electionId:
+          type: string
+        totalVote:
+          type: integer
+        candidateResults:
+          type: array
+          items:
+            $ref: "#/components/schemas/ElectionCandidateResult"
+
+    ElectionCandidateResult:
+      type: object
+      properties:
+        candidateGid:
+          type: string
+        voteAmount:
+          type: integer
+    CreateVote:
+      type: object
+      properties:
+        electionId:
+          type: string
+        candidateId:
+          type: string
+
     Election:
       allOf:
         - $ref: "#/components/schemas/CreateElection"
