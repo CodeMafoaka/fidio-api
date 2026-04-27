@@ -13,6 +13,58 @@ security:
   - BearerAuth: []
 
 paths:
+  /auth/login:
+    post:
+      operationId: login
+      tags:
+        - Auth
+      description: Login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginAccount"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginInfo"
+
+  /auth/register:
+    post:
+      operationId: register
+      tags:
+        - Auth
+      description: Register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterAccount"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Citizen"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags:
+        - Auth
+      description: Get current user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CitizenInfo"
+
   /citizens:
     post:
       operationId: createCitizen
@@ -146,6 +198,32 @@ paths:
 
 components:
   schemas:
+    LoginInfo:
+      type: object
+      properties:
+        jwt:
+          type: string
+
+    LoginAccount:
+      type: object
+      properties:
+        gid:
+          type: string
+        password:
+          type: string
+
+    RegisterAccount:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        gid:
+          type: string
+        password:
+          type: string
+
     ElectionResult:
       type: object
       properties:
@@ -227,6 +305,17 @@ components:
         id:
           type: string
           example: 123e4567-e89b-12d3-a456-426655440000
+
+    CitizenInfo:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        gid:
+          type: string
+          description: Gouvernement ID
 
     CreateCitizen:
       type: object
