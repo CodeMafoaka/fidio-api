@@ -240,10 +240,8 @@ components:
         gid:
           type: string
           description: Gouvernement ID
-        biometricData:
-          type: array
-          items:
-            $ref: "#/components/schemas/BiometricData"
+        password:
+          type: string
 
     BiometricData:
       type: object
@@ -266,5 +264,3 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
-
