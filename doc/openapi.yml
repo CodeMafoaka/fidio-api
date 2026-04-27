@@ -8,6 +8,9 @@ info:
 servers:
   - url: https://api.vote-madagascar.com
 
+security:
+  - BearerAuth: []
+
 tags:
   -
 
@@ -257,5 +260,11 @@ components:
       type: string
       enum:
         - FACE_ID
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 
 
