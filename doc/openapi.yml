@@ -11,9 +11,6 @@ servers:
 security:
   - BearerAuth: []
 
-tags:
-  -
-
 paths:
   /citizens:
     post:
