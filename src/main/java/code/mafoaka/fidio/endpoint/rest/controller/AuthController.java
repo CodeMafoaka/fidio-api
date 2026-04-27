@@ -1,0 +1,57 @@
+package code.mafoaka.fidio.endpoint.rest.controller;
+
+import code.mafoaka.fidio.endpoint.rest.api.AuthApi;
+import code.mafoaka.fidio.endpoint.rest.model.AuthResponse;
+import code.mafoaka.fidio.endpoint.rest.model.Citizen;
+import code.mafoaka.fidio.endpoint.rest.model.CreateCitizen;
+import code.mafoaka.fidio.endpoint.rest.model.LoginRequest;
+import code.mafoaka.fidio.repository.entity.CitizenEntity;
+import code.mafoaka.fidio.service.AuthService;
+import code.mafoaka.fidio.service.CitizenService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+public class AuthController implements AuthApi {
+  private final AuthService authService;
+  private final CitizenService citizenService;
+
+  @Override
+  public ResponseEntity<AuthResponse> login(LoginRequest loginRequest) {
+    String token = authService.login(loginRequest.getGid(), loginRequest.getPassword());
+    AuthResponse response = new AuthResponse();
+    response.setToken(token);
+    return ResponseEntity.ok(response);
+  }
+
+  @Override
+  public ResponseEntity<Citizen> register(CreateCitizen createCitizen) {
+    CitizenEntity entity =
+        CitizenEntity.builder()
+            .firstName(createCitizen.getFirstName())
+            .lastName(createCitizen.getLastName())
+            .gid(createCitizen.getGid())
+            .password(createCitizen.getPassword())
+            .build();
+    return ResponseEntity.status(HttpStatus.CREATED).body(toDto(authService.register(entity)));
+  }
+
+  @Override
+  public ResponseEntity<Citizen> whoami() {
+    String gid = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return ResponseEntity.ok(toDto(citizenService.getByGid(gid)));
+  }
+
+  private Citizen toDto(CitizenEntity entity) {
+    Citizen dto = new Citizen();
+    dto.setId(entity.getId().toString());
+    dto.setFirstName(entity.getFirstName());
+    dto.setLastName(entity.getLastName());
+    dto.setGid(entity.getGid());
+    return dto;
+  }
+}
