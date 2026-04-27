@@ -1,0 +1,327 @@
+openapi: 3.0.3
+
+info:
+  title: Madagascar Voting System API
+  description: API for a mobile electronic voting system in Madagascar with biometric authentication and JWT
+  version: 1.0.0
+
+servers:
+  - url: https://api.vote-madagascar.com
+
+tags:
+  - name: Auth
+  - name: Voters
+  - name: Candidates
+  - name: Votes
+  - name: Results
+  - name: Admin
+
+paths:
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Voter login
+      description: Login using CIN and fingerprint verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - cin
+                - fingerprintData
+              properties:
+                cin:
+                  type: string
+                  example: "101011234567"
+                fingerprintData:
+                  type: string
+                  example: "RmluZ2VycHJpbnREYXRhQmFzZTY0"
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Login successful"
+                  token:
+                    type: string
+                    example: "jwt_token_here"
+                  voter:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      firstName:
+                        type: string
+                        example: "Jean"
+                      lastName:
+                        type: string
+                        example: "Rakoto"
+                      cin:
+                        type: string
+                        example: "101011234567"
+        '401':
+          description: Authentication failed
+
+  /voters/register:
+    post:
+      tags:
+        - Voters
+      summary: Register voter
+      description: Create a new voter account with fingerprints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Voter'
+      responses:
+        '201':
+          description: Voter created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Voter created successfully"
+
+  /voters/profile:
+    put:
+      tags:
+        - Voters
+      summary: Update voter profile
+      description: Update first name, last name and phone number
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - firstName
+                - lastName
+                - phone
+              properties:
+                firstName:
+                  type: string
+                  example: "Jean"
+                lastName:
+                  type: string
+                  example: "Rakoto"
+                phone:
+                  type: string
+                  example: "+261341234567"
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Profile updated"
+
+  /voters/delete-account:
+    delete:
+      tags:
+        - Voters
+      summary: Delete voter account
+      description: Permanently delete voter account
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Account deleted"
+
+  /candidates:
+    get:
+      tags:
+        - Candidates
+      summary: Get candidates list
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  candidates:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Candidate'
+
+  /votes:
+    post:
+      tags:
+        - Votes
+      summary: Submit vote
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - candidateId
+                - fingerprintData
+              properties:
+                candidateId:
+                  type: integer
+                  example: 2
+                fingerprintData:
+                  type: string
+                  example: "fingerprint_base64"
+      responses:
+        '201':
+          description: Vote recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Vote recorded"
+
+  /results:
+    get:
+      tags:
+        - Results
+      summary: Get voting results
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        candidateName:
+                          type: string
+                        totalVotes:
+                          type: integer
+
+  /admin/candidates:
+    post:
+      tags:
+        - Admin
+      summary: Add candidate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Candidate'
+      responses:
+        '201':
+          description: Candidate added
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    Voter:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - cin
+        - phone
+        - fingerprints
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        cin:
+          type: string
+        phone:
+          type: string
+        fingerprints:
+          type: array
+          items:
+            type: object
+            required:
+              - fingerName
+              - fingerprintData
+            properties:
+              fingerName:
+                type: string
+              fingerprintData:
+                type: string
+
+    Candidate:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - politicalParty
+        - district
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        politicalParty:
+          type: string
+        district:
+          type: string
