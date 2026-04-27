@@ -1,20 +1,32 @@
-FROM eclipse-temurin:21-jdk AS build
+FROM eclipse-temurin:21-jdk-jammy AS build
 
 WORKDIR /app
 
-COPY . .
+# Copy gradle wrapper + config first (better caching)
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle .
+COPY settings.gradle .
 
 RUN chmod +x gradlew
-RUN ./gradlew clean bootJar
 
-FROM eclipse-temurin:21-jre
+# Copy source
+COPY src src
+
+# Build jar
+RUN ./gradlew clean bootJar --no-daemon
+
+
+FROM eclipse-temurin:21-jre-jammy
 
 WORKDIR /app
 
+# Copy built jar
 COPY --from=build /app/build/libs/*.jar app.jar
 
-ENV DATABASE_URL=$DATABASE_URL
-ENV DATABASE_USERNAME=$DATABASE_USERNAME
-ENV DATABASE_PASSWORD=$DATABASE_PASSWORD
+# No need for ARG/ENV mapping here (Render injects at runtime)
+# DATABASE_* should come from Render environment variables
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+EXPOSE 8080
+
+ENTRYPOINT ["sh", "-c", "exec java -jar app.jar --server.port=${PORT:-8080}"]
