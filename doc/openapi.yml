@@ -6,7 +6,8 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://api.vote-madagascar.com
+  - url: https://fidio-api.onrender.com
+  - url: https://fidio-api-dev.onrender.com
 
 security:
   - BearerAuth: []
