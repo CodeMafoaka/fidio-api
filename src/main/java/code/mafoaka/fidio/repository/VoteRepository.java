@@ -16,7 +16,7 @@ public interface VoteRepository extends JpaRepository<VoteEntity, UUID> {
   long countByElection(ElectionEntity election);
 
   @Query(
-      "select v.candidate.gid as gid, count(v) as count from VoteEntity v where v.election ="
-          + " :election group by v.candidate.gid")
+      "select v.candidate.citizen.gid as gid, count(v) as count from VoteEntity v where v.election"
+          + " = :election group by v.candidate.citizen.gid")
   List<Object[]> countVotesByCandidateForElection(@Param("election") ElectionEntity election);
 }

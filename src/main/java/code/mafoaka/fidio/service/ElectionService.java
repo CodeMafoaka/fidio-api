@@ -1,6 +1,7 @@
 package code.mafoaka.fidio.service;
 
 import code.mafoaka.fidio.repository.CandidateRepository;
+import code.mafoaka.fidio.repository.CitizenRepository;
 import code.mafoaka.fidio.repository.ElectionRepository;
 import code.mafoaka.fidio.repository.VoteRepository;
 import code.mafoaka.fidio.repository.entity.CandidateEntity;
@@ -19,6 +20,7 @@ public class ElectionService {
   private final ElectionRepository electionRepository;
   private final CandidateRepository candidateRepository;
   private final VoteRepository voteRepository;
+  private final CitizenRepository citizenRepository;
 
   @Transactional
   public List<ElectionEntity> createElections(List<ElectionEntity> elections) {
@@ -27,7 +29,17 @@ public class ElectionService {
       election.setCandidates(null);
       ElectionEntity savedElection = electionRepository.save(election);
       if (candidates != null) {
-        candidates.forEach(c -> c.setElection(savedElection));
+        candidates.forEach(
+            c -> {
+              c.setElection(savedElection);
+              c.setCitizen(
+                  citizenRepository
+                      .findByGid(c.getCitizen().getGid())
+                      .orElseThrow(
+                          () ->
+                              new IllegalArgumentException(
+                                  "Citizen with gid " + c.getCitizen().getGid() + " not found")));
+            });
         candidateRepository.saveAll(candidates);
         savedElection.setCandidates(candidates);
       }
