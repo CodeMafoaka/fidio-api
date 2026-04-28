@@ -24,7 +24,10 @@ public class VoteController implements VotesApi {
             .map(
                 v ->
                     service.createVoteFromIds(
-                        UUID.fromString(v.getElectionId()), UUID.fromString(v.getCandidateId())))
+                        UUID.fromString(v.getElectionId()),
+                        UUID.fromString(v.getCandidateId()),
+                        v.getMessage(),
+                        v.getSignature()))
             .collect(Collectors.toList());
     service.createVotes(entities);
     return ResponseEntity.status(HttpStatus.CREATED).build();

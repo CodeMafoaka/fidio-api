@@ -19,4 +19,6 @@ public interface VoteRepository extends JpaRepository<VoteEntity, UUID> {
       "select v.candidate.citizen.gid as gid, count(v) as count from VoteEntity v where v.election"
           + " = :election group by v.candidate.citizen.gid")
   List<Object[]> countVotesByCandidateForElection(@Param("election") ElectionEntity election);
+
+  boolean existsByElectionAndMessage(ElectionEntity election, String message);
 }

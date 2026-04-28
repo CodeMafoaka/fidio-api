@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -15,27 +15,26 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "\"vote\"")
+@Table(name = "rsa_key_pair")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VoteEntity {
+public class RsaKeyPairEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  @ManyToOne
+  @OneToOne
   @JoinColumn(name = "election_id")
   private ElectionEntity election;
 
-  @ManyToOne
-  @JoinColumn(name = "candidate_id")
-  private CandidateEntity candidate;
-
   @Column(nullable = false)
-  private String message;
+  private String modulus;
 
-  @Column(nullable = false)
-  private String signature;
+  @Column(name = "public_exponent", nullable = false)
+  private String publicExponent;
+
+  @Column(name = "private_exponent", nullable = false)
+  private String privateExponent;
 }

@@ -1,17 +1,14 @@
 package code.mafoaka.fidio.service;
 
 import code.mafoaka.fidio.repository.CandidateRepository;
-import code.mafoaka.fidio.repository.CitizenRepository;
 import code.mafoaka.fidio.repository.ElectionRepository;
 import code.mafoaka.fidio.repository.VoteRepository;
 import code.mafoaka.fidio.repository.entity.CandidateEntity;
 import code.mafoaka.fidio.repository.entity.ElectionEntity;
 import code.mafoaka.fidio.repository.entity.VoteEntity;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,26 +17,31 @@ public class VoteService {
   private final VoteRepository voteRepository;
   private final ElectionRepository electionRepository;
   private final CandidateRepository candidateRepository;
-  private final CitizenRepository citizenRepository;
+  private final BlindSignatureService blindSignatureService;
 
   public void createVotes(List<VoteEntity> votes) {
-    String gid = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var voter = citizenRepository.findByGid(gid).orElseThrow();
-
-    List<VoteEntity> toSave = new ArrayList<>();
     for (VoteEntity v : votes) {
-      v.setVoter(voter);
-      toSave.add(v);
+      if (!blindSignatureService.verifySignature(
+          v.getElection(), v.getMessage(), v.getSignature())) {
+        throw new IllegalArgumentException("Invalid blind signature for vote");
+      }
+      if (voteRepository.existsByElectionAndMessage(v.getElection(), v.getMessage())) {
+        throw new IllegalArgumentException("Vote already exists for this message");
+      }
     }
-    voteRepository.saveAll(toSave);
+    voteRepository.saveAll(votes);
   }
 
-  public VoteEntity createVoteFromIds(UUID electionId, UUID candidateId) {
+  public VoteEntity createVoteFromIds(
+      UUID electionId, UUID candidateId, String message, String signature) {
     ElectionEntity election = electionRepository.findById(electionId).orElseThrow();
     CandidateEntity candidate = candidateRepository.findById(candidateId).orElseThrow();
-    String gid = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var voter = citizenRepository.findByGid(gid).orElseThrow();
 
-    return VoteEntity.builder().election(election).candidate(candidate).voter(voter).build();
+    return VoteEntity.builder()
+        .election(election)
+        .candidate(candidate)
+        .message(message)
+        .signature(signature)
+        .build();
   }
 }
