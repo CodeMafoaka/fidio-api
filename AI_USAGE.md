@@ -17,6 +17,22 @@
     *   **Agent version**: Junie 2024.1
     *   **Date**: 2026-04-27
 
+#### `**feat: implement admin account bootstrap on startup**`
+
+1. **Changes Implemented**:
+    *   **Admin Bootstrap Logic**: Created `AdminAccountBootstrap` implementing `CommandLineRunner` to automatically create or update an admin account on application startup.
+    *   **Configuration**: Added support for configuring admin credentials via environment variables: `ADMIN_GID`, `ADMIN_PASSWORD`, `ADMIN_FIRST_NAME`, and `ADMIN_LAST_NAME`.
+    *   **Persistence**: Uses `CitizenService` for new admin creation to ensure password hashing and `CitizenRepository` to update existing users to `ADMIN` role if necessary.
+
+2. **Verification**:
+    *   **Unit Testing**: Created `AdminAccountBootstrapTest` to verify all bootstrap scenarios (creation, role update, skip if missing config, skip if already exists).
+    *   **Test Execution**: Successfully ran `./gradlew test --tests code.mafoaka.fidio.AdminAccountBootstrapTest`.
+
+3. **Specification**:
+    *   **Model version**: gemini-2.0-flash-exp
+    *   **Agent version**: Jules 2024.1
+    *   **Date**: 2026-05-20
+
 #### `**refactor: link candidate to citizen by gid**`
 
 1. **Changes Implemented**:
