@@ -29,8 +29,8 @@
 
 3. **Specification**:
     *   **Model version**: gemini-2.0-flash-exp
-    *   **Agent version**: Junie 2024.1
-    *   **Date**: 2026-04-27
+    *   **Agent version**: Jules
+    *   **Date**: 2026-04-28
 
 #### `**feat: implement jwt security and all api endpoints**`
 
