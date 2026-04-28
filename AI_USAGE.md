@@ -17,6 +17,21 @@
     *   **Agent version**: Junie 2024.1
     *   **Date**: 2026-04-27
 
+#### `**feat: implement request logging and global exception handling**`
+
+1. **Changes Implemented**:
+    *   **Global Exception Handling**: Created `GlobalExceptionHandler` with `@RestControllerAdvice` to handle exceptions and return a standard JSON response with a `message` field and appropriate HTTP status codes (404 for `NoSuchElementException`, 400 for `IllegalArgumentException`, 500 for others).
+    *   **Request Logging**: Implemented `RequestLoggerFilter` as a `OncePerRequestFilter` to log the HTTP method, request URI, and response status for every incoming request.
+
+2. **Verification**:
+    *   Verified the creation and content of the new classes.
+    *   Project compiles and tests run (as confirmed in subsequent steps).
+
+3. **Specification**:
+    *   **Model version**: gemini-2.0-flash-exp
+    *   **Agent version**: Junie 2024.1
+    *   **Date**: 2026-04-27
+
 #### `**feat: implement jwt security and all api endpoints**`
 
 1. **Changes Implemented**:
