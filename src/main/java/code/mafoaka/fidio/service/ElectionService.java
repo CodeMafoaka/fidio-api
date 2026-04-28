@@ -51,6 +51,10 @@ public class ElectionService {
     return electionRepository.findById(id).orElseThrow();
   }
 
+  public List<ElectionEntity> getAllElections() {
+    return electionRepository.findAll();
+  }
+
   public Map<String, Long> getResults(UUID electionId) {
     ElectionEntity election = getElectionById(electionId);
     List<Object[]> counts = voteRepository.countVotesByCandidateForElection(election);

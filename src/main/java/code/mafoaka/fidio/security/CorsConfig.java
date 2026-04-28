@@ -1,11 +1,9 @@
 package code.mafoaka.fidio.security;
 
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.*;
-import org.springframework.web.filter.CorsFilter;
-
-import java.util.List;
 
 @Configuration
 public class CorsConfig {
@@ -24,8 +22,7 @@ public class CorsConfig {
 
     config.setExposedHeaders(List.of("Authorization"));
 
-    UrlBasedCorsConfigurationSource source =
-        new UrlBasedCorsConfigurationSource();
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
     source.registerCorsConfiguration("/**", config);
 

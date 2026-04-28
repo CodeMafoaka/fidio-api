@@ -37,6 +37,12 @@ public class ElectionController implements ElectionsApi {
   }
 
   @Override
+  public ResponseEntity<List<Election>> getElections() {
+    return ResponseEntity.ok(
+        service.getAllElections().stream().map(this::toDto).collect(Collectors.toList()));
+  }
+
+  @Override
   public ResponseEntity<ElectionResult> getElectionResult(String electionId) {
     UUID uuid = UUID.fromString(electionId);
     var results = service.getResults(uuid);
