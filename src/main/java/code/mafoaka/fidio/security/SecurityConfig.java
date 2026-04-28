@@ -35,8 +35,6 @@ public class SecurityConfig {
                     .hasRole("ADMIN")
                     .requestMatchers(HttpMethod.POST, "/elections")
                     .hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.GET, "/elections/*/result")
-                    .hasRole("ADMIN")
                     .anyRequest()
                     .authenticated())
         .sessionManagement(
