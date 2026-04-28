@@ -105,7 +105,6 @@
     *   **API Specification**: Updated `openapi.yml` to include blind signature support.
         *   Added `BlindSignaturePublicKey`, `BlindSignatureRequest`, and `BlindSignatureResponse` schemas.
         *   Added `GET /elections/{electionId}/blind-signature/public-key` and `POST /elections/{electionId}/blind-signature/sign` endpoints.
-        *   Updated `CreateVote` to include `message` and `signature` fields.
     *   **Database Migration**: Added `V0_4__Add_blind_signature_support.sql` to replace `voter_id` in the `vote` table with `message` and `signature` fields, and added tables for RSA key pairs and tracking blind signature requests.
     *   **Persistence Layer**:
         *   Updated `VoteEntity` to use `message` and `signature` instead of `voter`.
@@ -115,8 +114,12 @@
         *   Implemented `BlindSignatureService` for RSA key generation, blind signing, and signature verification.
         *   Updated `VoteService` to verify blind signatures and prevent duplicate votes using the same message.
         *   Updated `ElectionService` to generate an RSA key pair for each new election.
+    *   **Security & Authentication**:
+        *   Implemented a new "Blind" authentication scheme (Authorization: Blind <electionId>:<message>:<signature>).
+        *   Added `BlindAuthenticationToken` to hold anonymous voter credentials.
+        *   Updated `JwtRequestFilter` to verify blind signatures and authorize anonymous voters for specific elections.
     *   **Controller Layer**:
-        *   Updated `VoteController` to handle the new `message` and `signature` fields in `CreateVote`.
+        *   Updated `VoteController` to retrieve voter `message` and `signature` from the `BlindAuthenticationToken` and validate matching `electionId`.
         *   Updated `ElectionController` to implement the new blind signature endpoints.
 
 2. **Verification**:

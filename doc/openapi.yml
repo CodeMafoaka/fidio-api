@@ -286,10 +286,6 @@ components:
           type: string
         candidateId:
           type: string
-        message:
-          type: string
-        signature:
-          type: string
 
     BlindSignaturePublicKey:
       type: object

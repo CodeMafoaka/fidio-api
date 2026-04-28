@@ -21,10 +21,7 @@ public class VoteService {
 
   public void createVotes(List<VoteEntity> votes) {
     for (VoteEntity v : votes) {
-      if (!blindSignatureService.verifySignature(
-          v.getElection(), v.getMessage(), v.getSignature())) {
-        throw new IllegalArgumentException("Invalid blind signature for vote");
-      }
+      // Signature is already verified in JwtRequestFilter for BlindAuthenticationToken
       if (voteRepository.existsByElectionAndMessage(v.getElection(), v.getMessage())) {
         throw new IllegalArgumentException("Vote already exists for this message");
       }
