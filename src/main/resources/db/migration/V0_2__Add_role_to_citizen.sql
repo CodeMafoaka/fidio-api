@@ -1,0 +1,2 @@
+ALTER TABLE "citizen" ADD COLUMN role VARCHAR DEFAULT 'USER';
+UPDATE "citizen" SET role = 'USER' WHERE role IS NULL;

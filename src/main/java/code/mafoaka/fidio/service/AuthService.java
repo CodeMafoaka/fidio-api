@@ -16,7 +16,7 @@ public class AuthService {
   public String login(String gid, String password) {
     CitizenEntity citizen = citizenService.getByGid(gid);
     if (passwordEncoder.matches(password, citizen.getPassword())) {
-      return jwtTokenUtil.generateToken(gid);
+      return jwtTokenUtil.generateToken(gid, citizen.getRole().name());
     }
     throw new RuntimeException("Invalid credentials");
   }

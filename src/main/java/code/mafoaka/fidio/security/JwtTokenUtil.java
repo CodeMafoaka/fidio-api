@@ -47,9 +47,14 @@ public class JwtTokenUtil {
     return (tokenUsername.equals(username) && !isTokenExpired(token));
   }
 
-  public String generateToken(String username) {
+  public String getRoleFromToken(String token) {
+    return getClaimFromToken(token, claims -> claims.get("role", String.class));
+  }
+
+  public String generateToken(String username, String role) {
     return Jwts.builder()
         .subject(username)
+        .claim("role", role)
         .issuedAt(new Date(System.currentTimeMillis()))
         .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
         .signWith(getSigningKey())
