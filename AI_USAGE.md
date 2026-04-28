@@ -128,11 +128,34 @@
     *   **Agent version**: Junie 2024.1
     *   **Date**: 2026-05-18
 
-#### `**Verification of previous work**`
-    *   Confirmed the project compiles successfully with `./gradlew compileJava`.
-    *   Verified that all source files were created in the correct packages.
+#### `**feat: replace voter identifier in vote by blind signatures**`
+
+1. **Changes Implemented**:
+    *   **API Specification**: Updated `openapi.yml` to include blind signature support.
+        *   Added `BlindSignaturePublicKey`, `BlindSignatureRequest`, and `BlindSignatureResponse` schemas.
+        *   Added `GET /elections/{electionId}/blind-signature/public-key` and `POST /elections/{electionId}/blind-signature/sign` endpoints.
+    *   **Database Migration**: Added `V0_4__Add_blind_signature_support.sql` to replace `voter_id` in the `vote` table with `message` and `signature` fields, and added tables for RSA key pairs and tracking blind signature requests.
+    *   **Persistence Layer**:
+        *   Updated `VoteEntity` to use `message` and `signature` instead of `voter`.
+        *   Added `RsaKeyPairEntity` and `BlindSignatureRequestEntity`.
+        *   Added `RsaKeyPairRepository` and `BlindSignatureRequestRepository`.
+    *   **Service Layer**:
+        *   Implemented `BlindSignatureService` for RSA key generation, blind signing, and signature verification.
+        *   Updated `VoteService` to verify blind signatures and prevent duplicate votes using the same message.
+        *   Updated `ElectionService` to generate an RSA key pair for each new election.
+    *   **Security & Authentication**:
+        *   Implemented a new "Blind" authentication scheme (Authorization: Blind <electionId>:<message>:<signature>).
+        *   Added `BlindAuthenticationToken` to hold anonymous voter credentials.
+        *   Updated `JwtRequestFilter` to verify blind signatures and authorize anonymous voters for specific elections.
+    *   **Controller Layer**:
+        *   Updated `VoteController` to retrieve voter `message` and `signature` from the `BlindAuthenticationToken` and validate matching `electionId`.
+        *   Updated `ElectionController` to implement the new blind signature endpoints.
+
+2. **Verification**:
+    *   Verified code generation with `./gradlew openApiGenerate`.
+    *   Confirmed successful compilation with `./gradlew compileJava`.
 
 3. **Specification**:
     *   **Model version**: gemini-2.0-flash-exp
-    *   **Agent version**: Junie 2024.1
-    *   **Date**: 2026-04-27
+    *   **Agent version**: Jules 2024.1
+    *   **Date**: 2026-05-20

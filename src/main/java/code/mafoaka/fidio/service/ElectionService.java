@@ -21,6 +21,7 @@ public class ElectionService {
   private final CandidateRepository candidateRepository;
   private final VoteRepository voteRepository;
   private final CitizenRepository citizenRepository;
+  private final BlindSignatureService blindSignatureService;
 
   @Transactional
   public List<ElectionEntity> createElections(List<ElectionEntity> elections) {
@@ -28,6 +29,7 @@ public class ElectionService {
       List<CandidateEntity> candidates = election.getCandidates();
       election.setCandidates(null);
       ElectionEntity savedElection = electionRepository.save(election);
+      blindSignatureService.generateKeyPairForElection(savedElection);
       if (candidates != null) {
         candidates.forEach(
             c -> {

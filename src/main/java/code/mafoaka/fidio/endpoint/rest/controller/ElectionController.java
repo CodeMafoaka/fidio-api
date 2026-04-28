@@ -1,6 +1,9 @@
 package code.mafoaka.fidio.endpoint.rest.controller;
 
 import code.mafoaka.fidio.endpoint.rest.api.ElectionsApi;
+import code.mafoaka.fidio.endpoint.rest.model.BlindSignaturePublicKey;
+import code.mafoaka.fidio.endpoint.rest.model.BlindSignatureRequest;
+import code.mafoaka.fidio.endpoint.rest.model.BlindSignatureResponse;
 import code.mafoaka.fidio.endpoint.rest.model.CreateElection;
 import code.mafoaka.fidio.endpoint.rest.model.Election;
 import code.mafoaka.fidio.endpoint.rest.model.ElectionCandidate;
@@ -9,6 +12,9 @@ import code.mafoaka.fidio.endpoint.rest.model.ElectionResult;
 import code.mafoaka.fidio.repository.entity.CandidateEntity;
 import code.mafoaka.fidio.repository.entity.CitizenEntity;
 import code.mafoaka.fidio.repository.entity.ElectionEntity;
+import code.mafoaka.fidio.repository.entity.RsaKeyPairEntity;
+import code.mafoaka.fidio.service.BlindSignatureService;
+import code.mafoaka.fidio.service.CitizenService;
 import code.mafoaka.fidio.service.ElectionService;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -18,12 +24,15 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
 public class ElectionController implements ElectionsApi {
   private final ElectionService service;
+  private final BlindSignatureService blindSignatureService;
+  private final CitizenService citizenService;
 
   @Override
   public ResponseEntity<List<Election>> createElections(List<CreateElection> createElection) {
@@ -63,6 +72,36 @@ public class ElectionController implements ElectionsApi {
             .collect(Collectors.toList()));
 
     return ResponseEntity.ok(dto);
+  }
+
+  @Override
+  public ResponseEntity<BlindSignaturePublicKey> getElectionBlindSignaturePublicKey(
+      String electionId) {
+    ElectionEntity election = service.getElectionById(UUID.fromString(electionId));
+    RsaKeyPairEntity keyPair = blindSignatureService.getKeyPairForElection(election);
+
+    BlindSignaturePublicKey dto = new BlindSignaturePublicKey();
+    dto.setModulus(keyPair.getModulus());
+    dto.setPublicExponent(keyPair.getPublicExponent());
+
+    return ResponseEntity.ok(dto);
+  }
+
+  @Override
+  public ResponseEntity<BlindSignatureResponse> signBlindedMessage(
+      String electionId, BlindSignatureRequest blindSignatureRequest) {
+    String gid = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    CitizenEntity citizen = citizenService.getByGid(gid);
+    ElectionEntity election = service.getElectionById(UUID.fromString(electionId));
+
+    String blindSignature =
+        blindSignatureService.signBlindedMessage(
+            election, citizen, blindSignatureRequest.getBlindedMessage());
+
+    BlindSignatureResponse response = new BlindSignatureResponse();
+    response.setBlindedSignature(blindSignature);
+
+    return ResponseEntity.ok(response);
   }
 
   private ElectionEntity toEntity(CreateElection dto) {

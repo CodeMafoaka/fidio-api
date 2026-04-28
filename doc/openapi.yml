@@ -144,6 +144,51 @@ paths:
               schema:
                 $ref: "#/components/schemas/ElectionResult"
 
+  /elections/{electionId}/blind-signature/public-key:
+    get:
+      operationId: getElectionBlindSignaturePublicKey
+      tags:
+        - Election
+      description: Get Election Blind Signature Public Key
+      parameters:
+        - in: path
+          name: electionId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlindSignaturePublicKey"
+
+  /elections/{electionId}/blind-signature/sign:
+    post:
+      operationId: signBlindedMessage
+      tags:
+        - Election
+      description: Sign a blinded message for an election
+      parameters:
+        - in: path
+          name: electionId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlindSignatureRequest"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlindSignatureResponse"
+
   /votes:
     post:
       operationId: createVotes
@@ -255,6 +300,26 @@ components:
         electionId:
           type: string
         candidateId:
+          type: string
+
+    BlindSignaturePublicKey:
+      type: object
+      properties:
+        modulus:
+          type: string
+        publicExponent:
+          type: string
+
+    BlindSignatureRequest:
+      type: object
+      properties:
+        blindedMessage:
+          type: string
+
+    BlindSignatureResponse:
+      type: object
+      properties:
+        blindedSignature:
           type: string
 
     Election:

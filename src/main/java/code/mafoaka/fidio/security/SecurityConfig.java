@@ -39,6 +39,8 @@ public class SecurityConfig {
                     .hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/elections/*/result")
                     .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/votes")
+                    .hasRole("ANONYMOUS_VOTER")
                     .anyRequest()
                     .authenticated())
         .sessionManagement(
