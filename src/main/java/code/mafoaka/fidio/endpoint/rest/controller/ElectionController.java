@@ -7,6 +7,7 @@ import code.mafoaka.fidio.endpoint.rest.model.ElectionCandidate;
 import code.mafoaka.fidio.endpoint.rest.model.ElectionCandidateResult;
 import code.mafoaka.fidio.endpoint.rest.model.ElectionResult;
 import code.mafoaka.fidio.repository.entity.CandidateEntity;
+import code.mafoaka.fidio.repository.entity.CitizenEntity;
 import code.mafoaka.fidio.repository.entity.ElectionEntity;
 import code.mafoaka.fidio.service.ElectionService;
 import java.time.OffsetDateTime;
@@ -71,7 +72,7 @@ public class ElectionController implements ElectionsApi {
               .map(
                   c ->
                       CandidateEntity.builder()
-                          .gid(c.getGid())
+                          .citizen(CitizenEntity.builder().gid(c.getGid()).build())
                           .description(c.getDescription())
                           .election(entity)
                           .build())
@@ -93,7 +94,7 @@ public class ElectionController implements ElectionsApi {
               .map(
                   c -> {
                     ElectionCandidate ec = new ElectionCandidate();
-                    ec.setGid(c.getGid());
+                    ec.setGid(c.getCitizen().getGid());
                     ec.setDescription(c.getDescription());
                     return ec;
                   })

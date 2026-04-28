@@ -17,6 +17,24 @@
     *   **Agent version**: Junie 2024.1
     *   **Date**: 2026-04-27
 
+#### `**refactor: link candidate to citizen by gid**`
+
+1. **Changes Implemented**:
+    *   **Database Migration**: Added `V0_3__Link_candidate_to_citizen.sql` to add a foreign key constraint from `candidate(gid)` to `citizen(gid)`.
+    *   **Persistence Layer**: Updated `CandidateEntity` to replace the `gid` String with a `@ManyToOne` relationship to `CitizenEntity`, joined on the `gid` column.
+    *   **Service Layer**: Updated `ElectionService` to resolve `CitizenEntity` by GID when creating candidates.
+    *   **Repository Layer**: Updated `VoteRepository` JPQL query to use the new relationship path `v.candidate.citizen.gid`.
+    *   **Controller Layer**: Updated `ElectionController` to handle the entity-to-DTO conversion with the new relationship.
+
+2. **Verification**:
+    *   Successfully ran `./gradlew compileJava`.
+    *   Verified the creation of the migration file and the code changes in `CandidateEntity`, `ElectionService`, `ElectionController`, and `VoteRepository`.
+
+3. **Specification**:
+    *   **Model version**: gemini-2.0-flash-exp
+    *   **Agent version**: Jules 2024.1
+    *   **Date**: 2026-05-20
+
 #### `**feat: implement request logging and global exception handling**`
 
 1. **Changes Implemented**:

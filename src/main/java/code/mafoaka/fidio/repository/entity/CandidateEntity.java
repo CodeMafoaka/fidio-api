@@ -28,6 +28,9 @@ public class CandidateEntity {
   @JoinColumn(name = "election_id")
   private ElectionEntity election;
 
-  private String gid;
+  @ManyToOne
+  @JoinColumn(name = "gid", referencedColumnName = "gid")
+  private CitizenEntity citizen;
+
   private String description;
 }
