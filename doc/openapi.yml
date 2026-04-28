@@ -199,7 +199,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Citizen"
+                $ref: "#/components/schemas/CitizenWithToken"
 
   /auth/me:
     get:
@@ -302,6 +302,13 @@ components:
         firstName:
           type: string
         lastName:
+          type: string
+
+    CitizenWithToken:
+      allOf:
+        - $ref: "#/components/schemas/Citizen"
+      properties:
+        token:
           type: string
 
     Citizen:

@@ -1,10 +1,7 @@
 package code.mafoaka.fidio.endpoint.rest.controller;
 
 import code.mafoaka.fidio.endpoint.rest.api.AuthApi;
-import code.mafoaka.fidio.endpoint.rest.model.AuthResponse;
-import code.mafoaka.fidio.endpoint.rest.model.Citizen;
-import code.mafoaka.fidio.endpoint.rest.model.CreateCitizen;
-import code.mafoaka.fidio.endpoint.rest.model.LoginRequest;
+import code.mafoaka.fidio.endpoint.rest.model.*;
 import code.mafoaka.fidio.repository.entity.CitizenEntity;
 import code.mafoaka.fidio.repository.entity.Role;
 import code.mafoaka.fidio.service.AuthService;
@@ -30,7 +27,7 @@ public class AuthController implements AuthApi {
   }
 
   @Override
-  public ResponseEntity<Citizen> register(CreateCitizen createCitizen) {
+  public ResponseEntity<CitizenWithToken> register(CreateCitizen createCitizen) {
     CitizenEntity entity =
         CitizenEntity.builder()
             .firstName(createCitizen.getFirstName())
@@ -39,7 +36,8 @@ public class AuthController implements AuthApi {
             .password(createCitizen.getPassword())
             .role(Role.USER)
             .build();
-    return ResponseEntity.status(HttpStatus.CREATED).body(toDto(authService.register(entity)));
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(toDtoWithToken(authService.register(entity)));
   }
 
   @Override
@@ -58,6 +56,20 @@ public class AuthController implements AuthApi {
         entity.getRole() != null
             ? code.mafoaka.fidio.endpoint.rest.model.Role.fromValue(entity.getRole().name())
             : null);
+    return dto;
+  }
+
+  private CitizenWithToken toDtoWithToken(CitizenEntity entity) {
+    CitizenWithToken dto = new CitizenWithToken();
+    dto.setId(entity.getId().toString());
+    dto.setFirstName(entity.getFirstName());
+    dto.setLastName(entity.getLastName());
+    dto.setGid(entity.getGid());
+    dto.setRole(
+        entity.getRole() != null
+            ? code.mafoaka.fidio.endpoint.rest.model.Role.fromValue(entity.getRole().name())
+            : null);
+    dto.setToken(authService.login(entity.getGid(), entity.getPassword()));
     return dto;
   }
 }
