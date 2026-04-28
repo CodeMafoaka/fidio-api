@@ -5,6 +5,7 @@ import code.mafoaka.fidio.endpoint.rest.model.Citizen;
 import code.mafoaka.fidio.endpoint.rest.model.CreateCitizen;
 import code.mafoaka.fidio.endpoint.rest.model.UpdateCitizen;
 import code.mafoaka.fidio.repository.entity.CitizenEntity;
+import code.mafoaka.fidio.repository.entity.Role;
 import code.mafoaka.fidio.service.CitizenService;
 import java.util.List;
 import java.util.UUID;
@@ -30,6 +31,7 @@ public class CitizenController implements CitizensApi {
                         .lastName(c.getLastName())
                         .gid(c.getGid())
                         .password(c.getPassword())
+                        .role(Role.USER)
                         .build())
             .collect(Collectors.toList());
     return ResponseEntity.status(HttpStatus.CREATED)
@@ -68,6 +70,10 @@ public class CitizenController implements CitizensApi {
     dto.setFirstName(entity.getFirstName());
     dto.setLastName(entity.getLastName());
     dto.setGid(entity.getGid());
+    dto.setRole(
+        entity.getRole() != null
+            ? code.mafoaka.fidio.endpoint.rest.model.Role.fromValue(entity.getRole().name())
+            : null);
     return dto;
   }
 }

@@ -6,6 +6,7 @@ import code.mafoaka.fidio.endpoint.rest.model.Citizen;
 import code.mafoaka.fidio.endpoint.rest.model.CreateCitizen;
 import code.mafoaka.fidio.endpoint.rest.model.LoginRequest;
 import code.mafoaka.fidio.repository.entity.CitizenEntity;
+import code.mafoaka.fidio.repository.entity.Role;
 import code.mafoaka.fidio.service.AuthService;
 import code.mafoaka.fidio.service.CitizenService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class AuthController implements AuthApi {
             .lastName(createCitizen.getLastName())
             .gid(createCitizen.getGid())
             .password(createCitizen.getPassword())
+            .role(Role.USER)
             .build();
     return ResponseEntity.status(HttpStatus.CREATED).body(toDto(authService.register(entity)));
   }
@@ -52,6 +54,10 @@ public class AuthController implements AuthApi {
     dto.setFirstName(entity.getFirstName());
     dto.setLastName(entity.getLastName());
     dto.setGid(entity.getGid());
+    dto.setRole(
+        entity.getRole() != null
+            ? code.mafoaka.fidio.endpoint.rest.model.Role.fromValue(entity.getRole().name())
+            : null);
     return dto;
   }
 }

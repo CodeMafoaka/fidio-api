@@ -3,6 +3,7 @@ package code.mafoaka.fidio.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -26,6 +27,16 @@ public class SecurityConfig {
             auth ->
                 auth.requestMatchers("/ping", "/auth/login", "/auth/register")
                     .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/citizens")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/citizens")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/citizens")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/elections")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/elections/*/result")
+                    .hasRole("ADMIN")
                     .anyRequest()
                     .authenticated())
         .sessionManagement(

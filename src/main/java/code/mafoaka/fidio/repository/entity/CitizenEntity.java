@@ -1,6 +1,8 @@
 package code.mafoaka.fidio.repository.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,4 +28,7 @@ public class CitizenEntity {
   private String lastName;
   private String gid;
   private String password;
+
+  @Enumerated(EnumType.STRING)
+  private Role role;
 }
