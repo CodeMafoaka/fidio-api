@@ -6,65 +6,15 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://fidio-api.onrender.com
-  - url: https://fidio-api-dev.onrender.com
+  - url: https://api.vote-madagascar.com
 
 security:
   - BearerAuth: []
 
+tags:
+  -
+
 paths:
-  /auth/login:
-    post:
-      operationId: login
-      tags:
-        - Auth
-      description: Login
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LoginAccount"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LoginInfo"
-
-  /auth/register:
-    post:
-      operationId: register
-      tags:
-        - Auth
-      description: Register
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RegisterAccount"
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Citizen"
-
-  /auth/me:
-    get:
-      operationId: getMe
-      tags:
-        - Auth
-      description: Get current user
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CitizenInfo"
-
   /citizens:
     post:
       operationId: createCitizen
@@ -166,7 +116,7 @@ paths:
         - Election
       description: Get Election Result
       parameters:
-        - in: query
+        - in: path
           name: electionId
           required: true
           schema:
@@ -196,32 +146,73 @@ paths:
         '201':
           description: Vote(s) created
 
+  /auth/login:
+    post:
+      operationId: login
+      tags:
+        - Auth
+      description: Authenticate a citizen and get a JWT
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/register:
+    post:
+      operationId: register
+      tags:
+        - Auth
+      description: Register a new citizen
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCitizen"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Citizen"
+
+  /auth/me:
+    get:
+      operationId: whoami
+      tags:
+        - Auth
+      description: Get current authenticated citizen
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Citizen"
+
 components:
   schemas:
-    LoginInfo:
-      type: object
-      properties:
-        jwt:
-          type: string
-
-    LoginAccount:
+    LoginRequest:
       type: object
       properties:
         gid:
           type: string
         password:
           type: string
-
-    RegisterAccount:
+    AuthResponse:
       type: object
       properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        gid:
-          type: string
-        password:
+        token:
           type: string
 
     ElectionResult:
@@ -305,17 +296,6 @@ components:
         id:
           type: string
           example: 123e4567-e89b-12d3-a456-426655440000
-
-    CitizenInfo:
-      type: object
-      properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        gid:
-          type: string
-          description: Gouvernement ID
 
     CreateCitizen:
       type: object
