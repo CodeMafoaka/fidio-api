@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.5'
     id 'io.spring.dependency-management' version '1.1.5'
+    id 'org.openapi.generator' version '7.5.0'
 }
 
 group = 'code.mafoaka'
@@ -18,6 +19,7 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.flywaydb:flyway-core:10.11.0'
     runtimeOnly 'org.flywaydb:flyway-database-postgresql:10.11.0'
@@ -27,10 +29,40 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+    implementation 'io.swagger.core.v3:swagger-annotations:2.2.21'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.junit.platform:junit-platform-launcher'
 }
+
+openApiGenerate {
+    generatorName = "spring"
+    inputSpec = "$projectDir/doc/openapi.yml"
+    outputDir = "$buildDir/generated"
+    apiPackage = "code.mafoaka.fidio.endpoint.rest.api"
+    modelPackage = "code.mafoaka.fidio.endpoint.rest.model"
+    configOptions = [
+            interfaceOnly: "true",
+            useSpringBoot3: "true"
+    ]
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs += "$buildDir/generated/src/main/java"
+        }
+    }
+}
+
+compileJava.dependsOn tasks.openApiGenerate
 
 tasks.named('test') {
     useJUnitPlatform()
