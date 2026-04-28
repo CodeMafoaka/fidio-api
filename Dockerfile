@@ -12,6 +12,7 @@ RUN chmod +x gradlew
 
 # Copy source
 COPY src src
+COPY doc doc
 
 # Build jar
 RUN ./gradlew clean bootJar --no-daemon
