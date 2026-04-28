@@ -56,7 +56,7 @@ public class JwtTokenUtil {
         .subject(username)
         .claim("role", role)
         .issuedAt(new Date(System.currentTimeMillis()))
-        .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
+        .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30)) // 30 minutes
         .signWith(getSigningKey())
         .compact();
   }
