@@ -29,8 +29,6 @@ public class SecurityConfig {
             auth ->
                 auth.requestMatchers("/ping", "/auth/login", "/auth/register")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/citizens")
-                    .hasRole("ADMIN")
                     .requestMatchers(HttpMethod.POST, "/citizens")
                     .hasRole("ADMIN")
                     .requestMatchers(HttpMethod.PUT, "/citizens")
