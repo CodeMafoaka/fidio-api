@@ -1,5 +1,19 @@
 ### AI Usage Log
 
+#### `**docs: update README with comprehensive project documentation**`
+
+1. **Changes Implemented**:
+    *   **README Documentation**: Created a detailed `README.md` including project description, tech stack, features list, prerequisites, and setup instructions (local, environment variables, Docker).
+    *   **Project Context**: Synthesized information from the codebase (entities, services, controllers, Dockerfile, etc.) to accurately reflect the system's capabilities like RBAC, biometric support, and admin bootstrapping.
+
+2. **Verification**:
+    *   Verified the file content using `read_file`.
+
+3. **Specification**:
+    *   **Model version**: gemini-2.0-flash-exp
+    *   **Agent version**: Jules 2024.1
+    *   **Date**: 2026-05-20
+
 #### `**feat: setup openapi generator and generate client models**`
 
 1. **Changes Implemented**:
